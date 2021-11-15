@@ -16,15 +16,17 @@ public class PlayerController : MonoBehaviour
     public AudioClip crashSound;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI titleText;
+    public TextMeshProUGUI scoreText;
     public Button restartButton;
     public Button startButton;
     private SpawnManager spawnManagerScript;
+    private float gravity = 9.8f;
     public float jumpForce;
     public float gravityModifier;
     public bool isOnGround = true;
     public bool gameOver = false;
     public bool isGameActive = false;
-    private int score;
+    public int score;
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") && !gameOver)
         {
             isOnGround = true;
             dirtParticle.Play();
@@ -69,6 +71,11 @@ public class PlayerController : MonoBehaviour
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
             GameOver();
+        }
+        else if (collision.gameObject.CompareTag("Food"))
+        {
+            ScorePoint();
+            Destroy(collision.gameObject);
         }
     }
 
@@ -78,7 +85,9 @@ public class PlayerController : MonoBehaviour
         score = 0;
         titleText.gameObject.SetActive(false);
         startButton.gameObject.SetActive(false);
-        spawnManagerScript.StartGame();
+        scoreText.text = "Score: 0";
+        scoreText.gameObject.SetActive(true);
+        spawnManagerScript.StartSpawning();
     }
 
     private void GameOver()
@@ -95,10 +104,16 @@ public class PlayerController : MonoBehaviour
 
     public void RestartGame()
     {
-        Physics.gravity = new Vector3(0, -9.8f, 0);
+        Physics.gravity = new Vector3(0, -gravity, 0);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         //SceneManager.LoadScene("Scenes/" + SceneManager.GetActiveScene().name);
         //SceneManager.LoadScene("Prototype 3");
+    }
+
+    private void ScorePoint()
+    {
+        score += 1;
+        scoreText.text = "Score: " + score;
     }
 }

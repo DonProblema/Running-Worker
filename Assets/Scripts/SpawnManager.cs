@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject obstaclePrefab;
-    private Vector3 spawnPos = new Vector3(25, 0, 0);
+    public GameObject[] objectPrefab;
+    private Vector3 spawnPosObstacle = new Vector3(25, 0, 0);
+    private Vector3 spawnPosFood = new Vector3(25, 5, 0);
     private float startDelay = 2;
-    private float repeatRate = 2;
+    private float repeatRate;
     private PlayerController playerControllerScript;
 
     // Start is called before the first frame update
@@ -22,16 +23,28 @@ public class SpawnManager : MonoBehaviour
         
     }
 
-    public void StartGame()
+    public void StartSpawning()
     {
-        InvokeRepeating("SpawnObstacle", startDelay, repeatRate);
+        //InvokeRepeating("SpawnObstacle", startDelay, Random.Range(2, 5));
+        StartCoroutine(SpawnObstacle());
     }
 
-    void SpawnObstacle()
+    IEnumerator SpawnObstacle()
     {
-        if (!playerControllerScript.gameOver && playerControllerScript.isGameActive)
+        while (playerControllerScript.isGameActive)
         {
-            Instantiate(obstaclePrefab, spawnPos, obstaclePrefab.transform.rotation);
+            repeatRate = Random.Range(1.5f, 5);
+            yield return new WaitForSeconds(repeatRate);
+            if (!playerControllerScript.gameOver && playerControllerScript.isGameActive)
+            {
+                Instantiate(objectPrefab[0], spawnPosObstacle, objectPrefab[0].transform.rotation);
+                Instantiate(objectPrefab[1], spawnPosFood, objectPrefab[1].transform.rotation);
+            }
         }
+    }
+
+    void SpawnFood()
+    {
+
     }
 }
