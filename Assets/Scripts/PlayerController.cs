@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     public bool isOnGround = true;
     public bool gameOver = false;
     public bool isGameActive = false;
-    public int score;
+    public int score = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -72,7 +72,8 @@ public class PlayerController : MonoBehaviour
         {
             GameOver();
         }
-        else if (collision.gameObject.CompareTag("Food"))
+        
+        if (collision.gameObject.CompareTag("Food"))
         {
             ScorePoint();
             Destroy(collision.gameObject);
@@ -85,7 +86,7 @@ public class PlayerController : MonoBehaviour
         score = 0;
         titleText.gameObject.SetActive(false);
         startButton.gameObject.SetActive(false);
-        scoreText.text = "Score: 0";
+        scoreText.text = "Score: " + score;
         scoreText.gameObject.SetActive(true);
         spawnManagerScript.StartSpawning();
     }
@@ -115,5 +116,6 @@ public class PlayerController : MonoBehaviour
     {
         score += 1;
         scoreText.text = "Score: " + score;
+        Debug.Log(score);
     }
 }
