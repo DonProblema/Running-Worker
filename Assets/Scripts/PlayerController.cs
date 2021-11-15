@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem dirtParticle;
     public AudioClip jumpSound;
     public AudioClip crashSound;
+    public TextMeshProUGUI gameOverText;
+    public Button restartButton;
     public float jumpForce;
     public float gravityModifier;
     public bool isOnGround = true;
@@ -31,20 +35,22 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver)
         {
-            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isOnGround = false;
-            playerAnim.SetTrigger("Jump_trig");
-            dirtParticle.Stop();
-            playerAudio.PlayOneShot(jumpSound, 0.5f);
+            Jump();
         }
 
         if (Input.GetKeyDown(KeyCode.R) && gameOver)
         {
-            Physics.gravity = new Vector3(0, -9.8f, 0);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            //SceneManager.LoadScene("Scenes/" + SceneManager.GetActiveScene().name);
-            //SceneManager.LoadScene("Prototype 3");
+            RestartGame();
         }
+    }
+
+    private void Jump()
+    {
+        playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        isOnGround = false;
+        playerAnim.SetTrigger("Jump_trig");
+        dirtParticle.Stop();
+        playerAudio.PlayOneShot(jumpSound, 0.5f);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -56,13 +62,28 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
-            gameOver = true;
-            Debug.Log("Game Over!");
-            explosionParticle.Play();
-            playerAnim.SetBool("Death_b", true);
-            playerAnim.SetInteger("DeathType_int", 1);
-            dirtParticle.Stop();
-            playerAudio.PlayOneShot(crashSound, 0.6f);
+            GameOver();
         }
+    }
+
+    private void GameOver()
+    {
+        gameOver = true;
+        explosionParticle.Play();
+        playerAnim.SetBool("Death_b", true);
+        playerAnim.SetInteger("DeathType_int", 1);
+        dirtParticle.Stop();
+        playerAudio.PlayOneShot(crashSound, 0.6f);
+        gameOverText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+    }
+
+    public void RestartGame()
+    {
+        Physics.gravity = new Vector3(0, -9.8f, 0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene("Scenes/" + SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene("Prototype 3");
     }
 }
