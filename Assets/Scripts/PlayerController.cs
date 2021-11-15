@@ -15,15 +15,21 @@ public class PlayerController : MonoBehaviour
     public AudioClip jumpSound;
     public AudioClip crashSound;
     public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI titleText;
     public Button restartButton;
+    public Button startButton;
+    private SpawnManager spawnManagerScript;
     public float jumpForce;
     public float gravityModifier;
     public bool isOnGround = true;
     public bool gameOver = false;
+    public bool isGameActive = false;
+    private int score;
 
     // Start is called before the first frame update
     void Start()
     {
+        spawnManagerScript = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         playerRb = GetComponent<Rigidbody>();
         playerAnim = GetComponent<Animator>();
         playerAudio = GetComponent<AudioSource>();
@@ -33,7 +39,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver)
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver && isGameActive)
         {
             Jump();
         }
@@ -64,6 +70,15 @@ public class PlayerController : MonoBehaviour
         {
             GameOver();
         }
+    }
+
+    public void StartGame()
+    {
+        isGameActive = true;
+        score = 0;
+        titleText.gameObject.SetActive(false);
+        startButton.gameObject.SetActive(false);
+        spawnManagerScript.StartGame();
     }
 
     private void GameOver()
