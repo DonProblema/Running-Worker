@@ -3,7 +3,7 @@ Unity game
 
 A portfolio game to show what I learn
 
-![Running Worker](Running Worker.jpg)
+![Running Worker](Running-Worker.jpg)
 
 ## Author
 
